@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import 'home_tabs/vote_tab.dart';
+
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
 
@@ -11,22 +13,28 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int currentTabIndex = 0;
   List<Widget> tabs = [
+    VoteTab(),
     Container(color: Colors.red),
     Container(color: Colors.green),
-    Container(color: Colors.yellow),
   ];
 
   List<BottomNavigationBarItem> tabsItems = [
     BottomNavigationBarItem(
-      icon: Icon(FontAwesomeIcons.voteYea),
+      icon: Icon(
+        FontAwesomeIcons.voteYea,
+      ),
       label: "Vote",
     ),
     BottomNavigationBarItem(
-      icon: Icon(FontAwesomeIcons.plusCircle),
+      icon: Icon(
+        FontAwesomeIcons.plusCircle,
+      ),
       label: "Create",
     ),
     BottomNavigationBarItem(
-      icon: Icon(FontAwesomeIcons.userCircle),
+      icon: Icon(
+        FontAwesomeIcons.userCircle,
+      ),
       label: "Profile",
     ),
   ];
@@ -40,17 +48,14 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("WhichOne"),
-        centerTitle: true,
-        leading: Icon(null),
-      ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Color(0xFFffd6da),
+        selectedItemColor: Color(0xFFdc8c97),
         onTap: onTapped,
         currentIndex: currentTabIndex,
         items: tabsItems,
       ),
-      body: tabs[currentTabIndex],
+      body: SafeArea(child: tabs[currentTabIndex]),
     );
   }
 }

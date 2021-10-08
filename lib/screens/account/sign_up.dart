@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:provider/provider.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import 'package:whichone/components/button.dart';
+import 'package:whichone/components/circular_indicator.dart';
 import 'package:whichone/components/custom_appbar.dart';
+import 'package:whichone/components/input_text.dart';
+import 'package:whichone/notifiers/auth_notifier.dart';
+import 'package:whichone/services/auth_services.dart';
 import '../../const.dart';
 
 class SignUp extends StatefulWidget {
@@ -10,182 +18,177 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  bool _isLoading = false;
+
+  void toggleSpinner() {
+    setState(() {
+      _isLoading = !_isLoading;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: CustomAppBar(
-        title: '',
-        onPressLeading: () => Navigator.pop(context),
-        onPressTrailing: () {},
-      ),
-      body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.light,
-        child: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Stack(
-            children: <Widget>[
-              Container(
-                height: double.infinity,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xFFffd6da),
-                      Color(0xFFfccfd2),
-                      Color(0xFFfdbec6),
-                      Color(0xFFdc8c97),
-                    ],
-                    stops: [0.1, 0.4, 0.7, 0.9],
+    final authNotifier = Provider.of<AuthNotifier>(context);
+    return ModalProgressHUD(
+      inAsyncCall: _isLoading,
+      progressIndicator: CircularIndicator(),
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: CustomAppBar(
+          title: '',
+          onPressLeading: () => Navigator.pop(context),
+          onPressTrailing: () {},
+        ),
+        body: AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemUiOverlayStyle.light,
+          child: GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: Stack(
+              children: <Widget>[
+                Container(
+                  height: double.infinity,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Color(0xFFffd6da),
+                        Color(0xFFfccfd2),
+                        Color(0xFFfdbec6),
+                        Color(0xFFdc8c97),
+                      ],
+                      stops: [0.1, 0.4, 0.7, 0.9],
+                    ),
                   ),
                 ),
-              ),
-              Container(
-                height: double.infinity,
-                child: SingleChildScrollView(
-                  physics: ClampingScrollPhysics(),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 40.0,
-                    vertical: 120.0,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      SizedBox(
-                        height: 50.0,
-                      ),
-                      Text(
-                        'Create Account',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'OpenSans',
-                          fontSize: 30.0,
-                          fontWeight: FontWeight.bold,
+                Container(
+                  height: double.infinity,
+                  child: SingleChildScrollView(
+                    physics: ClampingScrollPhysics(),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 40.0,
+                      vertical: 120.0,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        SizedBox(
+                          height: 50.0,
                         ),
-                      ),
-                      SizedBox(height: 30.0),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            'Full name',
-                            style: kLabelStyle,
+                        Text(
+                          'Create Account',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: 'OpenSans',
+                            fontSize: 30.0,
+                            fontWeight: FontWeight.bold,
                           ),
-                          SizedBox(height: 10.0),
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            decoration: kBoxDecorationStyle,
-                            height: 60.0,
-                            child: TextField(
+                        ),
+                        SizedBox(height: 30.0),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              'Full name',
+                              style: kLabelStyle,
+                            ),
+                            SizedBox(height: 10.0),
+                            InputTextField(
+                              controller: nameController,
+                              keyboardType: TextInputType.name,
+                              hintText: 'Enter your full name',
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 30.0,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              'Email address',
+                              style: kLabelStyle,
+                            ),
+                            SizedBox(height: 10.0),
+                            InputTextField(
+                              controller: emailController,
                               keyboardType: TextInputType.emailAddress,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'OpenSans',
-                              ),
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.only(top: 14.0),
-                                prefixIcon: Icon(
-                                  Icons.email,
-                                  color: Colors.white,
-                                ),
-                                hintText: 'Enter your full name',
-                                hintStyle: kHintTextStyle,
-                              ),
+                              hintText: 'Enter your Email address',
                             ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 30.0,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            'Email address',
-                            style: kLabelStyle,
-                          ),
-                          SizedBox(height: 10.0),
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            decoration: kBoxDecorationStyle,
-                            height: 60.0,
-                            child: TextField(
-                              obscureText: true,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'OpenSans',
-                              ),
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.only(top: 14.0),
-                                prefixIcon: Icon(
-                                  Icons.lock,
-                                  color: Colors.white,
-                                ),
-                                hintText: 'Enter your Email address',
-                                hintStyle: kHintTextStyle,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 30.0,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            'Password',
-                            style: kLabelStyle,
-                          ),
-                          SizedBox(height: 10.0),
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            decoration: kBoxDecorationStyle,
-                            height: 60.0,
-                            child: TextField(
-                              obscureText: true,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'OpenSans',
-                              ),
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.only(top: 14.0),
-                                prefixIcon: Icon(
-                                  Icons.lock,
-                                  color: Colors.white,
-                                ),
-                                hintText: 'Enter your Password',
-                                hintStyle: kHintTextStyle,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(vertical: 25.0),
-                        width: double.infinity,
-                        child: Button(
-                          text: 'Create Account',
-                          textColor: Colors.white,
-                          fontSize: 18,
-                          onPressed: () {},
+                          ],
                         ),
-                      ),
-                    ],
+                        SizedBox(
+                          height: 30.0,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              'Password',
+                              style: kLabelStyle,
+                            ),
+                            SizedBox(height: 10.0),
+                            InputTextField(
+                              visibility: true,
+                              controller: passwordController,
+                              keyboardType: TextInputType.text,
+                              hintText: 'Enter your Password',
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 15,
+                        ),
+                        Container(
+                          padding: EdgeInsets.symmetric(vertical: 25.0),
+                          width: double.infinity,
+                          child: Button(
+                            text: 'Create Account',
+                            textColor: Colors.white,
+                            fontSize: 18,
+                            onPressed: () async {
+                              toggleSpinner();
+                              if (nameController.text.length < 6) {
+                                showTopSnackBar(
+                                  context,
+                                  CustomSnackBar.error(
+                                    message: "A valid full name is required.",
+                                  ),
+                                );
+                              } else {
+                                try {
+                                  await signUpWithEmailPassword(authNotifier, {
+                                    'displayName': nameController.text,
+                                    'email': emailController.text.trim(),
+                                    'password': passwordController.text,
+                                  });
+                                  Navigator.pushReplacementNamed(
+                                      context, '/Login');
+                                } catch (error) {
+                                  showTopSnackBar(
+                                    context,
+                                    CustomSnackBar.error(
+                                      message: error.toString(),
+                                    ),
+                                  );
+                                }
+                              }
+                              toggleSpinner();
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
         ),
       ),

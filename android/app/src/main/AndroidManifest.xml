@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.prankster08.whichOne.whichone">
+    package="com.prankster08.whichone">
    <application
         android:label="whichone"
         android:icon="@mipmap/ic_launcher">

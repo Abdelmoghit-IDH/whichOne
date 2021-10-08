@@ -1,4 +1,4 @@
-package com.prankster08.whichOne.whichone
+package com.prankster08.whichone
 
 import io.flutter.embedding.android.FlutterActivity
 
