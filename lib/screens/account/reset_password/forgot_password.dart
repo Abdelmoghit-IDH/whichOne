@@ -1,44 +1,65 @@
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import 'package:whichone/components/button.dart';
 import 'package:whichone/components/circular_indicator.dart';
 import 'package:whichone/components/custom_appbar.dart';
+import 'package:whichone/components/input_text.dart';
 import 'package:whichone/global/strings.dart';
-import '../../../const.dart';
+import 'package:whichone/services/auth_services.dart';
 
-class ForgotPassword extends StatelessWidget {
+class ForgotPassword extends StatefulWidget {
   const ForgotPassword({Key? key}) : super(key: key);
 
   @override
+  _ForgotPasswordState createState() => _ForgotPasswordState();
+}
+
+class _ForgotPasswordState extends State<ForgotPassword> {
+  final emailController = TextEditingController();
+  bool _isLoading = false;
+
+  toggleSpinner() {
+    setState(() {
+      _isLoading = !_isLoading;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: CustomAppBar(
-        title: '',
-        onPressLeading: () => Navigator.pop(context),
-        onPressTrailing: () {},
-      ),
-      body: Stack(
-        children: [
-          Container(
-            height: double.infinity,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFFffd6da),
-                  Color(0xFFfccfd2),
-                  Color(0xFFfdbec6),
-                  Color(0xFFdc8c97),
-                ],
-                stops: [0.1, 0.4, 0.7, 0.9],
+    return ModalProgressHUD(
+      inAsyncCall: _isLoading,
+      progressIndicator: CircularIndicator(),
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: CustomAppBar(
+          title: '',
+          onPressLeading: () => Navigator.pop(context),
+          onPressTrailing: () {},
+        ),
+        body: Stack(
+          children: [
+            Container(
+              height: double.infinity,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFFffd6da),
+                    Color(0xFFfccfd2),
+                    Color(0xFFfdbec6),
+                    Color(0xFFdc8c97),
+                  ],
+                  stops: [0.1, 0.4, 0.7, 0.9],
+                ),
               ),
             ),
-          ),
-          BodyForgotPassword(),
-        ],
+            BodyForgotPassword(),
+          ],
+        ),
       ),
     );
   }
@@ -98,7 +119,7 @@ class _BodyForgotPasswordState extends State<BodyForgotPassword> {
                   Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      resetPassword,
+                      resetPasswordDescription,
                       style: TextStyle(
                         fontFamily: 'Montserrat',
                         fontSize: 18,
@@ -123,27 +144,10 @@ class _BodyForgotPasswordState extends State<BodyForgotPassword> {
                       ),
                     ),
                   ),
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    decoration: kBoxDecorationStyle,
-                    height: 60.0,
-                    child: TextField(
-                      obscureText: true,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'OpenSans',
-                      ),
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.only(top: 14.0),
-                        prefixIcon: Icon(
-                          Icons.lock,
-                          color: Colors.white,
-                        ),
-                        hintText: 'Enter your Password',
-                        hintStyle: kHintTextStyle,
-                      ),
-                    ),
+                  InputTextField(
+                    controller: emailController,
+                    keyboardType: TextInputType.name,
+                    hintText: 'Enter your email address',
                   ),
                   SizedBox(
                     height: 35,
@@ -154,16 +158,20 @@ class _BodyForgotPasswordState extends State<BodyForgotPassword> {
                       textColor: Colors.white,
                       text: 'Send Instructions',
                       fontSize: 17,
-                      onPressed: () {
-                        Navigator.pushNamed(context, "/CheckEmail");
-                        /* toggleSpinner();
+                      onPressed: () async {
+                        toggleSpinner();
                         try {
-                          await ForgotPassword(emailController.text.trim());
+                          await resetPassword(emailController.text.trim());
                           Navigator.pushNamed(context, "/CheckEmail");
                         } catch (error) {
-                          showMessage(context, error);
+                          showTopSnackBar(
+                            context,
+                            CustomSnackBar.error(
+                              message: error.toString(),
+                            ),
+                          );
                         }
-                        toggleSpinner(); */ //TODO: yodagile project
+                        toggleSpinner();
                       },
                     ),
                   ),

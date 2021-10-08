@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class CircularIndicator extends StatelessWidget {
   const CircularIndicator({
-    this.height= 50.0,
+    this.height = 50.0,
     this.width = 50.0,
     this.value,
     Key? key,
@@ -17,7 +17,7 @@ class CircularIndicator extends StatelessWidget {
       width: width,
       height: height,
       child: CircularProgressIndicator(
-        color: Theme.of(context).primaryColor,
+        color: Color(0xFFdc8c97),
         value: value,
       ),
     );

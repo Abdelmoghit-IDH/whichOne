@@ -1,8 +1,13 @@
 import 'dart:async';
-
+import 'dart:ui';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:whichone/animations/fade_route.dart';
-import 'package:whichone/screens/account/login.dart';
+import 'package:provider/provider.dart';
+import 'package:whichone/notifiers/auth_notifier.dart';
+import 'package:whichone/services/auth_services.dart';
+
+bool _isLogged = false;
+String _username = "Name";
 
 class Splash extends StatefulWidget {
   const Splash({Key? key}) : super(key: key);
@@ -14,26 +19,59 @@ class Splash extends StatefulWidget {
 class _SplashState extends State<Splash> {
   @override
   void initState() {
-    init();
+    initializeApp(context).whenComplete(() => startApp());
     super.initState();
   }
 
-  init() {
-    Timer(
-      Duration(seconds: 3),
-      () => Navigator.of(context).pushReplacement(
-        FadeRoute(
-          page: LoginScreen(),
-        ),
-      ),
-    );
+  Future initializeApp(context) async {
+    if (FirebaseAuth.instance.currentUser != null) {
+      _isLogged = true;
+    } else {
+      _isLogged = false;
+    }
+  }
+
+  startApp() async {
+    final authNotifier = Provider.of<AuthNotifier>(context, listen: false);
+    authNotifier.username = _username;
+    if (_isLogged) {
+      initializeCurrentUser(authNotifier);
+      Navigator.pushReplacementNamed(context, '/Home');
+    } else {
+      Navigator.pushReplacementNamed(context, '/Login');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Text("splash"),
+      body: Stack(
+        children: [
+          Container(
+            height: double.infinity,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xFFffd6da),
+                  Color(0xFFfccfd2),
+                  Color(0xFFfdbec6),
+                  Color(0xFFdc8c97),
+                ],
+                stops: [0.1, 0.4, 0.7, 0.9],
+              ),
+            ),
+          ),
+          Center(
+            child: Image.asset(
+              "assets/images/whichOne_logo.png",
+              width: 220,
+              height: 220,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -15,7 +15,7 @@ class RouteGenerator {
         case '/Splash':
           return Splash();
         case '/Login':
-          return LoginScreen();
+          return Login();
         case '/Home':
           return Home();
         case '/ForgotPassword':

@@ -12,12 +12,12 @@ import 'package:whichone/notifiers/auth_notifier.dart';
 import 'package:whichone/services/auth_services.dart';
 import '../../const.dart';
 
-class LoginScreen extends StatefulWidget {
+class Login extends StatefulWidget {
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _LoginState createState() => _LoginState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginState extends State<Login> {
   bool _rememberMe = false;
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -142,31 +142,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 'Forgot Password?',
                                 style: kLabelStyle,
                               ),
-                            ),
-                          ),
-                          Container(
-                            height: 20.0,
-                            child: Row(
-                              children: <Widget>[
-                                Theme(
-                                  data: ThemeData(
-                                      unselectedWidgetColor: Colors.white),
-                                  child: Checkbox(
-                                    value: _rememberMe,
-                                    checkColor: Color(0xffdc8c97),
-                                    activeColor: Colors.white,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _rememberMe = value!;
-                                      });
-                                    },
-                                  ),
-                                ),
-                                Text(
-                                  'Remember me',
-                                  style: kLabelStyle,
-                                ),
-                              ],
                             ),
                           ),
                           Container(

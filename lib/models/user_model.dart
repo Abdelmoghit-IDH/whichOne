@@ -13,8 +13,6 @@ class UserModel {
     this.displayName = data['displayName'];
     this.email = data['email'] ?? "";
     this.photoURL = data['photoURL'] ?? "";
-    this.coins = data['coins'] ?? 0;
-    this.role = data['role'] ?? "";
   }
 
   Map<String, dynamic> toMap() {
@@ -22,8 +20,6 @@ class UserModel {
       'displayName': this.displayName,
       'email': this.email,
       'photoURL': this.photoURL,
-      'coins': this.coins,
-      'role': this.role,
     };
   }
 
