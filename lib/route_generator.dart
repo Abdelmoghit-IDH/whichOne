@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:whichone/screens/account/login.dart';
 import 'package:whichone/screens/home/home.dart';
 import 'animations/animation_route.dart';
+import 'screens/account/reset_password/check_mail.dart';
+import 'screens/account/reset_password/forgot_password.dart';
+import 'screens/account/sign_up.dart';
 import 'screens/init_app/splash.dart';
 
 class RouteGenerator {
@@ -15,6 +18,12 @@ class RouteGenerator {
           return LoginScreen();
         case '/Home':
           return Home();
+        case '/ForgotPassword':
+          return ForgotPassword();
+        case '/CheckEmail':
+          return CheckEmail();
+        case '/SignUp':
+          return SignUp();
         default:
           return SizedBox.shrink();
       }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../const.dart';
+
 class Button extends StatefulWidget {
   const Button({
     Key? key,
@@ -19,7 +21,7 @@ class Button extends StatefulWidget {
   final Color? textColor;
   final String? text;
   final double? borderRadius;
-  final Function? onPressed;
+  final VoidCallback? onPressed;
   final IconData? icon;
   final double? sizeIcon;
   final Color? iconColor;
@@ -69,12 +71,12 @@ class _ButtonState extends State<Button> with SingleTickerProviderStateMixin {
     return GestureDetector(
       onTapUp: _onTapUp,
       onTapDown: _onTapDown,
-      onTap: widget.onPressed!(),
+      onTap: widget.onPressed,
       child: Transform.scale(
         scale: _scale!,
         child: Container(
           decoration: BoxDecoration(
-            color: widget.color,
+            color: widget.color ?? Color(0xffdc8c97),
             borderRadius: BorderRadius.circular(widget.borderRadius!),
             boxShadow: [
               BoxShadow(
@@ -94,10 +96,7 @@ class _ButtonState extends State<Button> with SingleTickerProviderStateMixin {
             children: [
               Text(
                 widget.text!,
-                style: Theme.of(context).textTheme.headline4!.copyWith(
-                      color: widget.textColor,
-                      fontSize: widget.fontSize,
-                    ),
+                style: kLabelStyle,
               ),
               // ignore: unnecessary_null_comparison
               if (widget.icon != null)

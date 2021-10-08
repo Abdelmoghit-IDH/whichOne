@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:responsive_framework/utils/scroll_behavior.dart';
-
 import 'route_generator.dart';
 
 void main() {
