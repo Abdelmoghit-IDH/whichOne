@@ -34,6 +34,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       child: Scaffold(
         extendBodyBehindAppBar: true,
         appBar: CustomAppBar(
+          iconLeading: IconData(2),
+          iconTrailing: IconData(2),
           title: '',
           onPressLeading: () => Navigator.pop(context),
           onPressTrailing: () {},

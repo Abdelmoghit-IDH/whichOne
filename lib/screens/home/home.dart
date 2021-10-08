@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import 'home_tabs/profile_tab.dart';
 import 'home_tabs/vote_tab.dart';
 
 class Home extends StatefulWidget {
@@ -15,7 +16,7 @@ class _HomeState extends State<Home> {
   List<Widget> tabs = [
     VoteTab(),
     Container(color: Colors.red),
-    Container(color: Colors.green),
+    ProfileTab(),
   ];
 
   List<BottomNavigationBarItem> tabsItems = [

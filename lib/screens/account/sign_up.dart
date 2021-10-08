@@ -40,6 +40,8 @@ class _SignUpState extends State<SignUp> {
         extendBodyBehindAppBar: true,
         appBar: CustomAppBar(
           title: '',
+          iconLeading: IconData(2),
+          iconTrailing: IconData(2),
           onPressLeading: () => Navigator.pop(context),
           onPressTrailing: () {},
         ),

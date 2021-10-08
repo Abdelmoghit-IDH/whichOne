@@ -6,9 +6,9 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
     Key? key,
     required this.onPressLeading,
     required this.onPressTrailing,
+    required this.iconLeading,
+    required this.iconTrailing,
     this.title,
-    this.iconLeading,
-    this.iconTrailing,
     this.colorTilte,
     this.fontSizeTitle,
   })  : preferredSize = Size.fromHeight(60.0),
@@ -17,7 +17,7 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
   @override
   final Size preferredSize;
   final String? title;
-  final IconData? iconLeading, iconTrailing;
+  final IconData iconLeading, iconTrailing;
   final VoidCallback onPressLeading;
   final VoidCallback onPressTrailing;
   final Color? colorTilte;
@@ -33,6 +33,7 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
       leading: IconButton(
         onPressed: onPressLeading,
         icon: Icon(
+          // ignore: unnecessary_null_comparison
           iconLeading != null ? iconLeading : FontAwesomeIcons.arrowLeft,
           color: Colors.white,
           size: 25,
