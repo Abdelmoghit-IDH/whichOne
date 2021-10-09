@@ -1,5 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.prankster08.azedpolls">
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+
    <application
         android:label="azedpolls"
         android:icon="@mipmap/ic_launcher">
