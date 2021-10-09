@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:whichone/screens/account/login.dart';
-import 'package:whichone/screens/home/home.dart';
+import 'package:azedpolls/screens/account/login.dart';
+import 'package:azedpolls/screens/home/home.dart';
 import 'animations/animation_route.dart';
 import 'screens/account/reset_password/check_mail.dart';
 import 'screens/account/reset_password/forgot_password.dart';

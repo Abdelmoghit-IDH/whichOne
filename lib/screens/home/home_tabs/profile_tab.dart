@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:whichone/components/custom_appbar.dart';
+import 'package:azedpolls/components/custom_appbar.dart';
 
 class ProfileTab extends StatelessWidget {
   const ProfileTab({Key? key}) : super(key: key);

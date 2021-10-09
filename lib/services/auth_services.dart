@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:convert';
 import 'dart:math';
 import 'package:crypto/crypto.dart';
-import 'package:whichone/models/user_model.dart';
-import 'package:whichone/notifiers/auth_notifier.dart';
+import 'package:azedpolls/models/user_model.dart';
+import 'package:azedpolls/notifiers/auth_notifier.dart';
 
 Future<void> initializeCurrentUser(AuthNotifier authNotifier) async {
   try {

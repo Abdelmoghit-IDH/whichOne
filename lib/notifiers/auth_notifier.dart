@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:whichone/models/user_model.dart';
+import 'package:azedpolls/models/user_model.dart';
 
 class AuthNotifier with ChangeNotifier {
   UserModel? _user;

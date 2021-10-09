@@ -3,8 +3,8 @@ import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:whichone/notifiers/auth_notifier.dart';
-import 'package:whichone/services/auth_services.dart';
+import 'package:azedpolls/notifiers/auth_notifier.dart';
+import 'package:azedpolls/services/auth_services.dart';
 
 bool _isLogged = false;
 String _username = "Name";
@@ -64,11 +64,15 @@ class _SplashState extends State<Splash> {
               ),
             ),
           ),
-          Center(
-            child: Image.asset(
-              "assets/images/whichOne_logo.png",
-              width: 220,
-              height: 220,
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            child: Center(
+              child: Image.asset(
+                "assets/images/logo.png",
+                width: 220,
+                height: 220,
+              ),
             ),
           ),
         ],

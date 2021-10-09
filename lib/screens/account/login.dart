@@ -4,12 +4,12 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
-import 'package:whichone/components/alert_dialog.dart';
-import 'package:whichone/components/button.dart';
-import 'package:whichone/components/circular_indicator.dart';
-import 'package:whichone/components/input_text.dart';
-import 'package:whichone/notifiers/auth_notifier.dart';
-import 'package:whichone/services/auth_services.dart';
+import 'package:azedpolls/components/alert_dialog.dart';
+import 'package:azedpolls/components/button.dart';
+import 'package:azedpolls/components/circular_indicator.dart';
+import 'package:azedpolls/components/input_text.dart';
+import 'package:azedpolls/notifiers/auth_notifier.dart';
+import 'package:azedpolls/services/auth_services.dart';
 import '../../const.dart';
 
 class Login extends StatefulWidget {
@@ -74,13 +74,13 @@ class _LoginState extends State<Login> {
                       physics: ClampingScrollPhysics(),
                       padding: EdgeInsets.symmetric(
                         horizontal: 40.0,
-                        vertical: 100.0,
+                        vertical: 90.0,
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Image.asset(
-                            'assets/images/whichOne_logo.png',
+                            'assets/images/logo.png',
                             width: 200,
                             height: 200,
                           ),

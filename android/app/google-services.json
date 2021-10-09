@@ -7,6 +7,35 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:110177379080:android:dc356a2fd66ba6f35f02bd",
+        "android_client_info": {
+          "package_name": "com.prankster08.azedpolls"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "110177379080-v3eigt2250dc1fjv58gaircdh55on30q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2672tz-WGoqjl6BQaUziCzyBxJ8py_HI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "110177379080-v3eigt2250dc1fjv58gaircdh55on30q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:110177379080:android:223bbf48ea9907495f02bd",
         "android_client_info": {
           "package_name": "com.prankster08.whichone"

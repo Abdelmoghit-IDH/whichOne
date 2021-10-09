@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:whichone/components/vote_tab/post.dart';
+import 'package:azedpolls/components/vote_tab/post.dart';
 
 class VoteTab extends StatelessWidget {
   const VoteTab({Key? key}) : super(key: key);
@@ -10,7 +10,7 @@ class VoteTab extends StatelessWidget {
       slivers: <Widget>[
         SliverAppBar(
           title: Text(
-            "WhichOne",
+            "AzedPolls",
             style: TextStyle(
               fontFamily: 'Changa',
               fontSize: 25,

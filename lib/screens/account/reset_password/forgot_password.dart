@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
-import 'package:whichone/components/button.dart';
-import 'package:whichone/components/circular_indicator.dart';
-import 'package:whichone/components/custom_appbar.dart';
-import 'package:whichone/components/input_text.dart';
-import 'package:whichone/global/strings.dart';
-import 'package:whichone/services/auth_services.dart';
+import 'package:azedpolls/components/button.dart';
+import 'package:azedpolls/components/circular_indicator.dart';
+import 'package:azedpolls/components/custom_appbar.dart';
+import 'package:azedpolls/components/input_text.dart';
+import 'package:azedpolls/global/strings.dart';
+import 'package:azedpolls/services/auth_services.dart';
 
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({Key? key}) : super(key: key);

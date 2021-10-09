@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:whichone/components/button.dart';
+import 'package:azedpolls/components/button.dart';
 
 class CheckEmail extends StatelessWidget {
   const CheckEmail({Key? key}) : super(key: key);

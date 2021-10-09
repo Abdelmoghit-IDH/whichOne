@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
-import 'package:whichone/components/button.dart';
-import 'package:whichone/components/circular_indicator.dart';
-import 'package:whichone/components/custom_appbar.dart';
-import 'package:whichone/components/input_text.dart';
-import 'package:whichone/notifiers/auth_notifier.dart';
-import 'package:whichone/services/auth_services.dart';
+import 'package:azedpolls/components/button.dart';
+import 'package:azedpolls/components/circular_indicator.dart';
+import 'package:azedpolls/components/custom_appbar.dart';
+import 'package:azedpolls/components/input_text.dart';
+import 'package:azedpolls/notifiers/auth_notifier.dart';
+import 'package:azedpolls/services/auth_services.dart';
 import '../../const.dart';
 
 class SignUp extends StatefulWidget {
@@ -40,7 +41,7 @@ class _SignUpState extends State<SignUp> {
         extendBodyBehindAppBar: true,
         appBar: CustomAppBar(
           title: '',
-          iconLeading: IconData(2),
+          iconLeading: FontAwesomeIcons.arrowLeft,
           iconTrailing: IconData(2),
           onPressLeading: () => Navigator.pop(context),
           onPressTrailing: () {},

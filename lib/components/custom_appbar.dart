@@ -40,6 +40,7 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
         ),
       ),
       actions: [
+        // ignore: unnecessary_null_comparison
         if (iconTrailing != null)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
