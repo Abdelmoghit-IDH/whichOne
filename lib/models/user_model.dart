@@ -5,8 +5,6 @@ class UserModel {
   String? displayName;
   String? email;
   String? photoURL;
-  int? coins;
-  String? role;
 
   UserModel(String uid, Map<String, dynamic> data) {
     this.uid = uid;

@@ -5,10 +5,12 @@ class AddText extends StatelessWidget {
     Key? key,
     this.index,
     this.onPressed,
+    this.controller,
   }) : super(key: key);
 
   final int? index;
   final VoidCallback? onPressed;
+  final TextEditingController? controller;
 
   rightOption(int index) {
     if (index == 1)
@@ -34,6 +36,7 @@ class AddText extends StatelessWidget {
             height: 300,
             child: Center(
               child: TextField(
+                controller: controller,
                 maxLines: 2,
                 textAlign: TextAlign.center,
                 cursorHeight: 40,

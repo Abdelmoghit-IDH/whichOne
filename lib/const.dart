@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 final kHintTextStyle = TextStyle(
   color: Colors.white54,
@@ -23,3 +24,18 @@ final kBoxDecorationStyle = BoxDecoration(
     ),
   ],
 );
+
+List<BottomNavigationBarItem> tabsItems = [
+  BottomNavigationBarItem(
+    icon: Icon(
+      FontAwesomeIcons.fileImage,
+    ),
+    label: "Picture",
+  ),
+  BottomNavigationBarItem(
+    icon: Icon(
+      Icons.format_size,
+    ),
+    label: "Text",
+  ),
+];

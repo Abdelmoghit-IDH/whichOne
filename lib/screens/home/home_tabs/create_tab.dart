@@ -1,4 +1,3 @@
-import 'dart:io' as io;
 import 'dart:io';
 import 'package:azedpolls/components/circular_indicator.dart';
 import 'package:azedpolls/components/create_tab/picture_poll.dart';
@@ -11,6 +10,7 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:path/path.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
+import '../../../const.dart';
 
 class CreateTab extends StatefulWidget {
   const CreateTab({
@@ -29,6 +29,9 @@ class _CreateTabState extends State<CreateTab> {
   File? _imageFile1;
   File? _imageFile2;
   bool _isLoading = false;
+  final _pollQuestionController = TextEditingController();
+  final _optionOneController = TextEditingController();
+  final _optionTwoController = TextEditingController();
   final picker = ImagePicker();
 
   Future uploadImageToFirebase(File imageFile) async {
@@ -43,7 +46,7 @@ class _CreateTabState extends State<CreateTab> {
       customMetadata: {'picked-file-path': fileName},
     );
     firebase_storage.UploadTask uploadTask;
-    uploadTask = ref.putFile(io.File(imageFile.path), metadata);
+    uploadTask = ref.putFile(File(imageFile.path), metadata);
     Future.value(uploadTask)
         .then((value) => {print("Upload file path ${value.ref.fullPath}")})
         .onError((error, stackTrace) =>
@@ -77,21 +80,6 @@ class _CreateTabState extends State<CreateTab> {
       _isLoading = !_isLoading;
     });
   }
-
-  List<BottomNavigationBarItem> tabsItems = [
-    BottomNavigationBarItem(
-      icon: Icon(
-        FontAwesomeIcons.fileImage,
-      ),
-      label: "Picture",
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(
-        Icons.format_size,
-      ),
-      label: "Text",
-    ),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -135,24 +123,42 @@ class _CreateTabState extends State<CreateTab> {
                     padding: const EdgeInsets.only(right: 6),
                     child: TextButton(
                       onPressed: () {
-                        toggleSpinner();
-                        if (_imageFile1 != null && _imageFile2 != null) {
-                          uploadImageToFirebase(_imageFile1!);
-                          uploadImageToFirebase(_imageFile2!).whenComplete(
-                            () => uploadImageToFirebase(_imageFile1!)
-                                .whenComplete(
-                              () => widget.callback!(),
-                            ),
-                          );
+                        if (_selectedPageIndex == 0) {
+                          if (_imageFile1 != null && _imageFile2 != null) {
+                            toggleSpinner();
+                            uploadImageToFirebase(_imageFile1!).whenComplete(
+                              () => uploadImageToFirebase(_imageFile2!),
+                            );
+
+                            widget.callback!();
+                            toggleSpinner();
+                          } else {
+                            showTopSnackBar(
+                              context,
+                              CustomSnackBar.error(
+                                message: "Make sure to fill all requirements",
+                              ),
+                            );
+                          }
                         } else {
-                          showTopSnackBar(
-                            context,
-                            CustomSnackBar.error(
-                              message: "Make sure to fill all requirements",
-                            ),
-                          );
+                          if (_optionOneController.value.text.isEmpty ||
+                              _optionTwoController.value.text.isEmpty ||
+                              _pollQuestionController.value.text.isEmpty) {
+                            showTopSnackBar(
+                              context,
+                              CustomSnackBar.error(
+                                message: "Make sure to fill all requirements",
+                              ),
+                            );
+                          } else {
+                            showTopSnackBar(
+                              context,
+                              CustomSnackBar.error(
+                                message: "The new poll was created succesfully",
+                              ),
+                            );
+                          }
                         }
-                        toggleSpinner();
                       },
                       child: Text(
                         "Next",
@@ -183,6 +189,7 @@ class _CreateTabState extends State<CreateTab> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: TextField(
+                              controller: _pollQuestionController,
                               maxLines: 2,
                               textAlign: TextAlign.center,
                               cursorHeight: 40,
@@ -214,6 +221,8 @@ class _CreateTabState extends State<CreateTab> {
                             ),
                           if (_selectedPageIndex != 0)
                             TextPoll(
+                              optionOneController: _optionOneController,
+                              optionTwoController: _optionTwoController,
                               onPressed1: () {
                                 print("on pressed 1");
                               },

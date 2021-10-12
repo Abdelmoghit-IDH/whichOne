@@ -35,7 +35,7 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
         icon: Icon(
           // ignore: unnecessary_null_comparison
           iconLeading != null ? iconLeading : FontAwesomeIcons.arrowLeft,
-          color: Colors.white,
+          color: Colors.black,
           size: 25,
         ),
       ),

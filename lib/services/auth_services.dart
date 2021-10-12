@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:convert';
 import 'dart:math';
@@ -10,10 +9,6 @@ Future<void> initializeCurrentUser(AuthNotifier authNotifier) async {
   try {
     User? user = FirebaseAuth.instance.currentUser;
     if (null != user) {
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
       UserModel userModel = new UserModel(
         user.uid,
         {
@@ -22,10 +17,6 @@ Future<void> initializeCurrentUser(AuthNotifier authNotifier) async {
           'photoURL': user.photoURL,
         },
       );
-      if (doc.data() != null) {
-        userModel.coins = doc.data()!['coins'] ?? 0;
-        userModel.role = doc.data()!['role'] ?? "";
-      }
       await userModel.update();
       authNotifier.user = userModel;
     }
