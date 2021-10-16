@@ -107,7 +107,7 @@ class _LoginState extends State<Login> {
                               SizedBox(height: 10.0),
                               InputTextField(
                                 controller: emailController,
-                                keyboardType: TextInputType.text,
+                                keyboardType: TextInputType.emailAddress,
                                 hintText: 'Enter your Email',
                               ),
                             ],
@@ -126,7 +126,7 @@ class _LoginState extends State<Login> {
                               InputTextField(
                                 visibility: true,
                                 controller: passwordController,
-                                keyboardType: TextInputType.emailAddress,
+                                keyboardType: TextInputType.visiblePassword,
                                 hintText: 'Enter your Password',
                               ),
                             ],
@@ -136,7 +136,9 @@ class _LoginState extends State<Login> {
                             alignment: Alignment.centerRight,
                             child: GestureDetector(
                               onTap: () => Navigator.pushNamed(
-                                  context, '/ForgotPassword'),
+                                context,
+                                '/ForgotPassword',
+                              ),
                               child: Text(
                                 'Forgot Password?',
                                 style: kLabelStyle,

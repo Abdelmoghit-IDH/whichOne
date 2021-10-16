@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ProfileTab extends StatelessWidget {
-  const ProfileTab({Key? key}) : super(key: key);
+  ProfileTab({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,8 +14,10 @@ class ProfileTab extends StatelessWidget {
         backgroundColor: Color(0xff414141),
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: Icon(FontAwesomeIcons.cog),
+            onPressed: () => Navigator.pushNamed(context, '/Settings'),
+            icon: Icon(
+              FontAwesomeIcons.cog,
+            ),
           )
         ],
       ),
@@ -45,7 +47,7 @@ class BodyProfile extends StatelessWidget {
                     Center(
                       child: CircleAvatar(
                         backgroundColor: Colors.transparent,
-                        radius: 40,
+                        radius: 45,
                         backgroundImage: AssetImage(
                           'assets/images/profile.png',
                         ),
@@ -65,7 +67,8 @@ class BodyProfile extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () =>
+                              Navigator.pushNamed(context, '/EditProfile'),
                           style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all(
                               Color(0xff414141),

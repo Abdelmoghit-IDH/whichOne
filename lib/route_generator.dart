@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:azedpolls/screens/account/login.dart';
 import 'package:azedpolls/screens/home/home.dart';
 import 'animations/animation_route.dart';
+import 'components/profile_tab/edit_profile.dart';
+import 'components/profile_tab/settings.dart';
 import 'screens/account/reset_password/check_mail.dart';
 import 'screens/account/reset_password/forgot_password.dart';
 import 'screens/account/sign_up.dart';
@@ -24,6 +26,10 @@ class RouteGenerator {
           return CheckEmail();
         case '/SignUp':
           return SignUp();
+        case '/Settings':
+          return Settings();
+        case '/EditProfile':
+          return EditProfile();
         default:
           return SizedBox.shrink();
       }
