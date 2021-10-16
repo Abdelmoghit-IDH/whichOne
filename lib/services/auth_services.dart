@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:convert';
 import 'dart:math';
@@ -8,16 +9,21 @@ import 'package:azedpolls/notifiers/auth_notifier.dart';
 Future<void> initializeCurrentUser(AuthNotifier authNotifier) async {
   try {
     User? user = FirebaseAuth.instance.currentUser;
+    final users = FirebaseFirestore.instance.collection('users');
     if (null != user) {
+      final data = await users.doc(user.uid).get();
       UserModel userModel = new UserModel(
         user.uid,
         {
-          'displayName': user.displayName,
+          'fullname': data.data()!["fullname"],
+          'username': data.data()!["username"],
           'email': user.email,
-          'photoURL': user.photoURL,
+          'gender': data.data()!["gender"],
+          'imageUrl': data.data()!["imageUrl"],
+          'coverUrl': data.data()!["coverUrl"],
         },
       );
-      await userModel.update();
+
       authNotifier.user = userModel;
     }
   } catch (error) {
@@ -70,7 +76,20 @@ Future<void> signUpWithEmailPassword(
       email: user['email'],
       password: user['password'],
     );
-    await _auth.currentUser!.updateDisplayName(user['displayName']);
+
+    UserModel userModel = new UserModel(
+      _auth.currentUser!.uid,
+      {
+        'fullname': user['fullname'],
+        'username': user['username'],
+        'email': user['email'],
+        'gender': user['gender'],
+        'imageUrl': user['imageUrl'],
+      },
+    );
+
+    await userModel.update();
+    await _auth.currentUser!.updateDisplayName(user['username']);
     await _auth.currentUser!.sendEmailVerification();
     await FirebaseAuth.instance.signOut();
   } on FirebaseAuthException catch (error) {

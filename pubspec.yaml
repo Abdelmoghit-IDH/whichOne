@@ -17,6 +17,7 @@ dependencies:
   responsive_framework: ^0.1.2
   font_awesome_flutter: ^9.1.0
   modal_progress_hud_nsn: ^0.1.0-nullsafety-0
+  material_design_icons_flutter: ^5.0.6295
   provider: ^5.0.0
   shared_preferences: ^2.0.6
   top_snackbar_flutter: ^1.0.0
@@ -28,6 +29,7 @@ dependencies:
   image_picker: 
   transparent_image: ^2.0.0
   firebase_storage: ^10.0.5
+  cached_network_image: ^3.1.0
   
 dev_dependencies:
   flutter_test:

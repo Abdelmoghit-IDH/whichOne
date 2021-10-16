@@ -1,5 +1,8 @@
+import 'dart:math';
+import 'package:azedpolls/notifiers/auth_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 class ProfileTab extends StatelessWidget {
   ProfileTab({Key? key}) : super(key: key);
@@ -8,19 +11,6 @@ class ProfileTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        backgroundColor: Color(0xff414141),
-        actions: [
-          IconButton(
-            onPressed: () => Navigator.pushNamed(context, '/Settings'),
-            icon: Icon(
-              FontAwesomeIcons.cog,
-            ),
-          )
-        ],
-      ),
       body: BodyProfile(),
     );
   }
@@ -31,19 +21,34 @@ class BodyProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 75),
+    final authNotifier = Provider.of<AuthNotifier>(context);
+    return SafeArea(
       child: Container(
         height: double.infinity,
         width: double.infinity,
         child: Column(
           children: [
             Expanded(
-              flex: 2,
+              flex: 3,
               child: Container(
-                color: Color(0xff414141),
+                decoration: BoxDecoration(
+                  color: Color(0xff414141),
+                  image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: NetworkImage(authNotifier.user.coverUrl!),
+                  ),
+                ),
                 child: Column(
                   children: [
+                    ListTile(
+                        trailing: IconButton(
+                      onPressed: () =>
+                          Navigator.pushNamed(context, '/Settings'),
+                      icon: Icon(
+                        FontAwesomeIcons.cog,
+                        color: Colors.white,
+                      ),
+                    )),
                     Center(
                       child: CircleAvatar(
                         backgroundColor: Colors.transparent,
@@ -54,7 +59,7 @@ class BodyProfile extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "@nervousgrumpy9837",
+                      authNotifier.user.username!,
                       style: TextStyle(
                         fontSize: 22,
                         color: Colors.white,
@@ -157,7 +162,7 @@ class BodyProfile extends StatelessWidget {
               ),
             ),
             Expanded(
-              flex: 5,
+              flex: 6,
               child: Container(
                 color: Colors.white,
                 child: DefaultTabController(
@@ -187,7 +192,34 @@ class BodyProfile extends StatelessWidget {
                               child: Text("Home Body"),
                             ),
                             Container(
-                              child: Text("Articles Body"),
+                              child: GridView.extent(
+                                childAspectRatio: (2 / 2),
+                                crossAxisSpacing: 4,
+                                mainAxisSpacing: 4,
+                                padding: EdgeInsets.all(10.0),
+                                maxCrossAxisExtent: 200.0,
+                                children: List.generate(50, (index) {
+                                  return Container(
+                                    padding: EdgeInsets.all(20.0),
+                                    child: Center(
+                                      child: GridTile(
+                                        footer: Text(
+                                          'Item $index',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        child: Icon(Icons.access_alarm,
+                                            size: 40.0, color: Colors.white),
+                                      ),
+                                    ),
+                                    color: RandomColorModel().getColor(),
+                                    margin: EdgeInsets.all(1.0),
+                                  );
+                                }),
+                              ),
                             ),
                           ]),
                         ),
@@ -201,5 +233,15 @@ class BodyProfile extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+//TODO: to delete
+
+class RandomColorModel {
+  Random random = Random();
+  Color getColor() {
+    return Color.fromARGB(random.nextInt(300), random.nextInt(300),
+        random.nextInt(300), random.nextInt(300));
   }
 }

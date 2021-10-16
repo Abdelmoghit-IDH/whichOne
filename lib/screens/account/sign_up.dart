@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'package:azedpolls/components/custom_radio.dart';
+import 'package:azedpolls/models/gender_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -11,7 +14,9 @@ import 'package:azedpolls/components/custom_appbar.dart';
 import 'package:azedpolls/components/input_text.dart';
 import 'package:azedpolls/notifiers/auth_notifier.dart';
 import 'package:azedpolls/services/auth_services.dart';
+import 'package:transparent_image/transparent_image.dart';
 import '../../const.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class SignUp extends StatefulWidget {
   @override
@@ -20,10 +25,17 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   final nameController = TextEditingController();
+  final usernameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
+  List<Gender> genders = [
+    Gender("Male", MdiIcons.genderMale, false),
+    Gender("Female", MdiIcons.genderFemale, false),
+  ];
+
   bool _isLoading = false;
+  int? _indexSelectedGender;
 
   void toggleSpinner() {
     setState(() {
@@ -31,9 +43,20 @@ class _SignUpState extends State<SignUp> {
     });
   }
 
+  selectedGender() {
+    switch (_indexSelectedGender) {
+      case 0:
+        return "male";
+      case 1:
+        return "female";
+      default:
+        return "male";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final authNotifier = Provider.of<AuthNotifier>(context);
+    final authNotifier = Provider.of<AuthNotifier>(context, listen: false);
     return ModalProgressHUD(
       inAsyncCall: _isLoading,
       progressIndicator: CircularIndicator(),
@@ -75,14 +98,12 @@ class _SignUpState extends State<SignUp> {
                     physics: ClampingScrollPhysics(),
                     padding: EdgeInsets.symmetric(
                       horizontal: 40.0,
-                      vertical: 120.0,
+                      vertical: 80.0,
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        SizedBox(
-                          height: 50.0,
-                        ),
+                        SizedBox(height: 30.0),
                         Text(
                           'Create Account',
                           style: TextStyle(
@@ -105,6 +126,24 @@ class _SignUpState extends State<SignUp> {
                               controller: nameController,
                               keyboardType: TextInputType.name,
                               hintText: 'Enter your full name',
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 30.0,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              'Username',
+                              style: kLabelStyle,
+                            ),
+                            SizedBox(height: 10.0),
+                            InputTextField(
+                              controller: usernameController,
+                              keyboardType: TextInputType.name,
+                              hintText: 'Enter your Username',
                             ),
                           ],
                         ),
@@ -140,13 +179,34 @@ class _SignUpState extends State<SignUp> {
                             InputTextField(
                               visibility: true,
                               controller: passwordController,
-                              keyboardType: TextInputType.text,
+                              keyboardType: TextInputType.visiblePassword,
                               hintText: 'Enter your Password',
                             ),
                           ],
                         ),
                         SizedBox(
-                          height: 15,
+                          height: 20,
+                        ),
+                        Container(
+                          height: 100,
+                          child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              shrinkWrap: true,
+                              itemCount: genders.length,
+                              itemBuilder: (context, index) {
+                                return InkWell(
+                                  splashColor: Colors.pinkAccent,
+                                  onTap: () {
+                                    setState(() {
+                                      _indexSelectedGender = index;
+                                      genders.forEach((gender) =>
+                                          gender.isSelected = false);
+                                      genders[index].isSelected = true;
+                                    });
+                                  },
+                                  child: CustomRadio(genders[index]),
+                                );
+                              }),
                         ),
                         Container(
                           padding: EdgeInsets.symmetric(vertical: 25.0),
@@ -154,6 +214,7 @@ class _SignUpState extends State<SignUp> {
                           child: Button(
                             text: 'Create Account',
                             textColor: Colors.white,
+                            color: Color(0xFFfdbec6),
                             fontSize: 18,
                             onPressed: () async {
                               toggleSpinner();
@@ -167,12 +228,18 @@ class _SignUpState extends State<SignUp> {
                               } else {
                                 try {
                                   await signUpWithEmailPassword(authNotifier, {
-                                    'displayName': nameController.text,
+                                    'fullname': nameController.text,
+                                    'username': usernameController.text,
                                     'email': emailController.text.trim(),
                                     'password': passwordController.text,
+                                    'gender': selectedGender(),
+                                    'imageUrl': ' ',
                                   });
+
                                   Navigator.pushReplacementNamed(
-                                      context, '/Login');
+                                    context,
+                                    '/Login',
+                                  );
                                 } catch (error) {
                                   showTopSnackBar(
                                     context,
@@ -193,6 +260,69 @@ class _SignUpState extends State<SignUp> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class ImageProfil extends StatelessWidget {
+  const ImageProfil({
+    Key? key,
+    this.onPressed,
+    required File? profilImage,
+  })  : _profilImage = profilImage,
+        super(key: key);
+
+  final File? _profilImage;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onPressed,
+      child: Card(
+        elevation: 6,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(150),
+        ),
+        child: Stack(
+          children: [
+            if (_profilImage == null)
+              SizedBox(
+                width: 100.0,
+                height: 100.0,
+                child: Container(
+                  width: 100.0,
+                  height: 100.0,
+                  decoration: new BoxDecoration(
+                    color: Color(0xFFdc8c97),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            SizedBox(
+              width: 100.0,
+              height: 100.0,
+              child: CircleAvatar(
+                backgroundColor: Colors.transparent,
+                radius: 80,
+                backgroundImage: _profilImage == null
+                    ? MemoryImage(kTransparentImage)
+                    : FileImage(_profilImage!) as ImageProvider,
+              ),
+            ),
+            if (_profilImage == null)
+              SizedBox(
+                width: 100.0,
+                height: 100.0,
+                child: Icon(
+                  Icons.add_a_photo_outlined,
+                  size: 50,
+                  color: Color(0xFFffd6da),
+                ),
+              ),
+          ],
         ),
       ),
     );

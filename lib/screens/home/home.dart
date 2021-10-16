@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
+import '../../const.dart';
 import 'home_tabs/create_tab.dart';
 import 'home_tabs/profile_tab.dart';
 import 'home_tabs/vote_tab.dart';
@@ -40,26 +39,12 @@ class _HomeState extends State<Home> {
     }
   }
 
-  List<BottomNavigationBarItem> tabsItems = [
-    BottomNavigationBarItem(
-      icon: Icon(
-        FontAwesomeIcons.voteYea,
-      ),
-      label: "Vote",
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(
-        FontAwesomeIcons.plusCircle,
-      ),
-      label: "Create",
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(
-        FontAwesomeIcons.userCircle,
-      ),
-      label: "Profile",
-    ),
-  ];
+  @override
+  void initState() {
+    /* final authNotifier = Provider.of<AuthNotifier>(context, listen: false);
+    print(authNotifier.user.email!); */
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -28,15 +28,21 @@ final kBoxDecorationStyle = BoxDecoration(
 List<BottomNavigationBarItem> tabsItems = [
   BottomNavigationBarItem(
     icon: Icon(
-      FontAwesomeIcons.fileImage,
+      FontAwesomeIcons.voteYea,
     ),
-    label: "Picture",
+    label: "Vote",
   ),
   BottomNavigationBarItem(
     icon: Icon(
-      Icons.format_size,
+      FontAwesomeIcons.plusCircle,
     ),
-    label: "Text",
+    label: "Create",
+  ),
+  BottomNavigationBarItem(
+    icon: Icon(
+      FontAwesomeIcons.userCircle,
+    ),
+    label: "Profile",
   ),
 ];
 
