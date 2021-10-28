@@ -6,22 +6,19 @@ import 'package:crypto/crypto.dart';
 import 'package:azedpolls/models/user_model.dart';
 import 'package:azedpolls/notifiers/auth_notifier.dart';
 
+import 'database_service.dart';
+
 Future<void> initializeCurrentUser(AuthNotifier authNotifier) async {
   try {
     User? user = FirebaseAuth.instance.currentUser;
-    final users = FirebaseFirestore.instance.collection('users');
-    if (null != user) {
-      final data = await users.doc(user.uid).get();
+    if (user != null) {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
       UserModel userModel = new UserModel(
         user.uid,
-        {
-          'fullname': data.data()!["fullname"],
-          'username': data.data()!["username"],
-          'email': user.email,
-          'gender': data.data()!["gender"],
-          'imageUrl': data.data()!["imageUrl"],
-          'coverUrl': data.data()!["coverUrl"],
-        },
+        doc.data()!,
       );
 
       authNotifier.user = userModel;
@@ -68,29 +65,23 @@ String handleAuthExceptions(FirebaseAuthException error) {
   return message;
 }
 
-Future<void> signUpWithEmailPassword(
-    AuthNotifier authNotifier, Map<String, dynamic> user) async {
+Future<void> signUpWithEmailPassword(Map<String, dynamic> user) async {
   try {
     FirebaseAuth _auth = FirebaseAuth.instance;
+
     await _auth.createUserWithEmailAndPassword(
       email: user['email'],
       password: user['password'],
     );
 
-    UserModel userModel = new UserModel(
-      _auth.currentUser!.uid,
-      {
-        'fullname': user['fullname'],
-        'username': user['username'],
-        'email': user['email'],
-        'gender': user['gender'],
-        'imageUrl': user['imageUrl'],
-      },
-    );
+    print(_auth.currentUser!.uid);
 
-    await userModel.update();
-    await _auth.currentUser!.updateDisplayName(user['username']);
+    await DatabaseService(uid: _auth.currentUser!.uid).uploadUserData(
+        user['email'], user['displayName'], user['email'], user['gender']);
+
+    await _auth.currentUser!.updateDisplayName(user['displayName']);
     await _auth.currentUser!.sendEmailVerification();
+
     await FirebaseAuth.instance.signOut();
   } on FirebaseAuthException catch (error) {
     throw handleAuthExceptions(error);

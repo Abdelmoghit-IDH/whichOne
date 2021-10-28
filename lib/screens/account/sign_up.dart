@@ -5,14 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import 'package:azedpolls/components/button.dart';
 import 'package:azedpolls/components/circular_indicator.dart';
 import 'package:azedpolls/components/custom_appbar.dart';
 import 'package:azedpolls/components/input_text.dart';
-import 'package:azedpolls/notifiers/auth_notifier.dart';
 import 'package:azedpolls/services/auth_services.dart';
 import 'package:transparent_image/transparent_image.dart';
 import '../../const.dart';
@@ -24,27 +22,14 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  final nameController = TextEditingController();
-  final usernameController = TextEditingController();
+  final displayNameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-
-  List<Gender> genders = [
-    Gender("Male", MdiIcons.genderMale, false),
-    Gender("Female", MdiIcons.genderFemale, false),
-  ];
-
+  int? _selectedGender;
   bool _isLoading = false;
-  int? _indexSelectedGender;
-
-  void toggleSpinner() {
-    setState(() {
-      _isLoading = !_isLoading;
-    });
-  }
 
   selectedGender() {
-    switch (_indexSelectedGender) {
+    switch (_selectedGender) {
       case 0:
         return "male";
       case 1:
@@ -54,9 +39,20 @@ class _SignUpState extends State<SignUp> {
     }
   }
 
+  List<Gender> genders = [
+    Gender("Male", MdiIcons.genderMale, false),
+    Gender("Female", MdiIcons.genderFemale, false),
+  ];
+
+  void toggleSpinner() {
+    setState(() {
+      _isLoading = !_isLoading;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final authNotifier = Provider.of<AuthNotifier>(context, listen: false);
+    //final authNotifier = Provider.of<AuthNotifier>(context, listen: false);
     return ModalProgressHUD(
       inAsyncCall: _isLoading,
       progressIndicator: CircularIndicator(),
@@ -98,7 +94,7 @@ class _SignUpState extends State<SignUp> {
                     physics: ClampingScrollPhysics(),
                     padding: EdgeInsets.symmetric(
                       horizontal: 40.0,
-                      vertical: 80.0,
+                      vertical: 140.0,
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -118,38 +114,18 @@ class _SignUpState extends State<SignUp> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              'Full name',
+                              'Full Name',
                               style: kLabelStyle,
                             ),
                             SizedBox(height: 10.0),
                             InputTextField(
-                              controller: nameController,
+                              controller: displayNameController,
                               keyboardType: TextInputType.name,
                               hintText: 'Enter your full name',
                             ),
                           ],
                         ),
-                        SizedBox(
-                          height: 30.0,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              'Username',
-                              style: kLabelStyle,
-                            ),
-                            SizedBox(height: 10.0),
-                            InputTextField(
-                              controller: usernameController,
-                              keyboardType: TextInputType.name,
-                              hintText: 'Enter your Username',
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 30.0,
-                        ),
+                        SizedBox(height: 30.0),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
@@ -198,7 +174,7 @@ class _SignUpState extends State<SignUp> {
                                   splashColor: Colors.pinkAccent,
                                   onTap: () {
                                     setState(() {
-                                      _indexSelectedGender = index;
+                                      _selectedGender = index;
                                       genders.forEach((gender) =>
                                           gender.isSelected = false);
                                       genders[index].isSelected = true;
@@ -214,11 +190,11 @@ class _SignUpState extends State<SignUp> {
                           child: Button(
                             text: 'Create Account',
                             textColor: Colors.white,
-                            color: Color(0xFFfdbec6),
+                            color: Color(0xFFdc8c97),
                             fontSize: 18,
                             onPressed: () async {
                               toggleSpinner();
-                              if (nameController.text.length < 6) {
+                              if (displayNameController.text.length < 6) {
                                 showTopSnackBar(
                                   context,
                                   CustomSnackBar.error(
@@ -227,13 +203,12 @@ class _SignUpState extends State<SignUp> {
                                 );
                               } else {
                                 try {
-                                  await signUpWithEmailPassword(authNotifier, {
-                                    'fullname': nameController.text,
-                                    'username': usernameController.text,
+                                  await signUpWithEmailPassword({
+                                    'displayName':
+                                        displayNameController.text.trim(),
                                     'email': emailController.text.trim(),
-                                    'password': passwordController.text,
+                                    'password': passwordController.text.trim(),
                                     'gender': selectedGender(),
-                                    'imageUrl': ' ',
                                   });
 
                                   Navigator.pushReplacementNamed(

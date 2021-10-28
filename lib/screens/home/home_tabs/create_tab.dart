@@ -95,7 +95,7 @@ class _CreateTabState extends State<CreateTab> {
             selectedItemColor: Color(0xFFdc8c97),
             onTap: _onItemTapped,
             currentIndex: _selectedPageIndex,
-            items: tabsItems,
+            items: tabsCreatePoll,
           ),
           body: CustomScrollView(
             slivers: [

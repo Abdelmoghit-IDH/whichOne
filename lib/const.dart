@@ -25,7 +25,22 @@ final kBoxDecorationStyle = BoxDecoration(
   ],
 );
 
-List<BottomNavigationBarItem> tabsItems = [
+List<BottomNavigationBarItem> tabsCreatePoll = [
+  BottomNavigationBarItem(
+    icon: Icon(
+      FontAwesomeIcons.fileImage,
+    ),
+    label: "Picture",
+  ),
+  BottomNavigationBarItem(
+    icon: Icon(
+      Icons.format_size,
+    ),
+    label: "Text",
+  ),
+];
+
+List<BottomNavigationBarItem> tabsItemsHome = [
   BottomNavigationBarItem(
     icon: Icon(
       FontAwesomeIcons.voteYea,

@@ -22,6 +22,7 @@ class BodyProfile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authNotifier = Provider.of<AuthNotifier>(context);
+    print(authNotifier.user.uid);
     return SafeArea(
       child: Container(
         height: double.infinity,
@@ -33,10 +34,12 @@ class BodyProfile extends StatelessWidget {
               child: Container(
                 decoration: BoxDecoration(
                   color: Color(0xff414141),
-                  image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: NetworkImage(authNotifier.user.coverUrl!),
-                  ),
+                  image: authNotifier.user.coverUrl != ""
+                      ? DecorationImage(
+                          fit: BoxFit.cover,
+                          image: NetworkImage(authNotifier.user.coverUrl!),
+                        )
+                      : null,
                 ),
                 child: Column(
                   children: [
@@ -50,16 +53,24 @@ class BodyProfile extends StatelessWidget {
                       ),
                     )),
                     Center(
-                      child: CircleAvatar(
-                        backgroundColor: Colors.transparent,
-                        radius: 45,
-                        backgroundImage: AssetImage(
-                          'assets/images/profile.png',
+                      child: Card(
+                        elevation: 20,
+                        shadowColor: Colors.grey,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(150),
+                        ),
+                        child: CircleAvatar(
+                          backgroundColor: Colors.transparent,
+                          radius: 45,
+                          backgroundImage: authNotifier.user.imageUrl! != ""
+                              ? NetworkImage(authNotifier.user.imageUrl!)
+                              : AssetImage('assets/images/profile.png')
+                                  as ImageProvider,
                         ),
                       ),
                     ),
                     Text(
-                      authNotifier.user.username!,
+                      "authNotifier.user.username!",
                       style: TextStyle(
                         fontSize: 22,
                         color: Colors.white,
@@ -186,7 +197,6 @@ class BodyProfile extends StatelessWidget {
                       Expanded(
                         flex: 9,
                         child: Container(
-                          //height: 400,
                           child: TabBarView(children: [
                             Container(
                               child: Text("Home Body"),

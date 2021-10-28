@@ -5,9 +5,11 @@ import 'package:azedpolls/notifiers/auth_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
+import 'dart:async';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import '../choose_image.dart';
+import '../circular_indicator.dart';
 import '../custom_radio.dart';
 import 'package:path/path.dart' as Path;
 
@@ -23,12 +25,12 @@ class _EditProfileState extends State<EditProfile> {
   final usernameController = TextEditingController();
   final fullnameController = TextEditingController();
   final emailController = TextEditingController();
+  bool _isLoading = false;
   File? _coverImage;
   File? _profilImage;
   int? _selectedGender;
   String? _imageUrl;
   String? _coverUrl;
-
   List<Gender> genders = [];
 
   Future coverImage() async {
@@ -36,6 +38,12 @@ class _EditProfileState extends State<EditProfile> {
 
     setState(() {
       _coverImage = File(pickedFile!.path);
+    });
+  }
+
+  void toggleSpinner() {
+    setState(() {
+      _isLoading = !_isLoading;
     });
   }
 
@@ -83,60 +91,98 @@ class _EditProfileState extends State<EditProfile> {
     }
   }
 
-  Future uploadImageToFirebase(
-      File imageFile, bool isCover, String cloudFolder) async {
-    final authNotifier = Provider.of<AuthNotifier>(context, listen: false);
-    String fileName = Path.basename(imageFile.path);
+  Future<String> uploadImageFile(File image, String cloudFolder,
+      {String? imageName}) async {
+    String fileName = Path.basename(image.path);
     firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
         .ref()
         .child(cloudFolder)
-        .child('/$fileName');
+        .child('/$imageName');
 
     final metadata = firebase_storage.SettableMetadata(
       contentType: 'image/jpeg',
       customMetadata: {'picked-file-path': fileName},
     );
-    firebase_storage.UploadTask uploadTask;
-    uploadTask = ref.putFile(File(imageFile.path), metadata);
-    Future.value(uploadTask)
-        .then((value) => {print("Upload file path ${value.ref.fullPath}")})
-        .onError((error, stackTrace) =>
-            {print("Upload file path error ${error.toString()} ")});
 
-    uploadTask.whenComplete(() async {
-      try {
-        if (isCover) {
-          UserModel userModel = new UserModel(
-            authNotifier.user.uid!,
-            {
-              'fullname': fullnameController.text,
-              'username': usernameController.text,
-              'email': emailController.text,
-              'gender': selectedGender(),
-              'coverUrl': await ref.getDownloadURL(),
-            },
+    firebase_storage.UploadTask uploadTask;
+    uploadTask = ref.putFile(File(image.path), metadata);
+
+    //TODO: last problem 
+    //! problem her : getDownloadUrl() is not supported at the root of the bucket.
+    String imageUri = await uploadTask.storage.ref().getDownloadURL();
+    return imageUri;
+  }
+
+  chooseImage(BuildContext context, ImagePicker picker, bool isCover) {
+    return showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                title: new Text(
+                  'Select an Option',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 20,
+                  ),
+                ),
+              ),
+              ListTile(
+                title: new Text(
+                  'Take Photo',
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
+                ),
+                onTap: () async {
+                  final pickedFile =
+                      await picker.pickImage(source: ImageSource.camera);
+
+                  setState(() {
+                    if (isCover)
+                      _coverImage = File(pickedFile!.path);
+                    else
+                      _profilImage = File(pickedFile!.path);
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: new Text(
+                  'Choose from Gallery',
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
+                ),
+                onTap: () async {
+                  final pickedFile =
+                      await picker.pickImage(source: ImageSource.gallery);
+
+                  setState(() {
+                    if (isCover)
+                      _coverImage = File(pickedFile!.path);
+                    else
+                      _profilImage = File(pickedFile!.path);
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: new Text(
+                  'Cancel',
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
           );
-          await userModel.update();
-          authNotifier.user = userModel;
-        } else {
-          UserModel userModel = new UserModel(
-            authNotifier.user.uid!,
-            {
-              'fullname': fullnameController.text,
-              'username': usernameController.text,
-              'email': emailController.text,
-              'gender': selectedGender(),
-              'imageUrl': await ref.getDownloadURL(),
-            },
-          );
-          await userModel.update();
-          authNotifier.user = userModel;
-        }
-      } catch (onError) {
-        print("Error $onError");
-      }
-      print("_coverUrl $_coverUrl");
-    });
+        });
   }
 
   @override
@@ -144,163 +190,196 @@ class _EditProfileState extends State<EditProfile> {
     super.initState();
     final authNotifier = Provider.of<AuthNotifier>(context, listen: false);
     usernameController.text = authNotifier.user.username!;
-    fullnameController.text = authNotifier.user.fullname!;
     emailController.text = authNotifier.user.email!;
+    fullnameController.text = authNotifier.user.fullName!;
     _selectedGender = rightGender(authNotifier.user.gender!);
-    gender();
     _imageUrl = authNotifier.user.imageUrl;
     _coverUrl = authNotifier.user.coverUrl;
+    gender();
   }
 
   @override
   Widget build(BuildContext context) {
     final authNotifier = Provider.of<AuthNotifier>(context);
-    return Scaffold(
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: SingleChildScrollView(
-          physics: ClampingScrollPhysics(),
-          child: SafeArea(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Stack(
-                  children: [
-                    Column(
-                      children: [
-                        Stack(
-                          children: [
-                            Container(
-                              height: 230,
-                              decoration: BoxDecoration(
-                                color: Colors.grey,
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: _coverImage == null
-                                      ? NetworkImage(
-                                          authNotifier.user.coverUrl!)
-                                      : FileImage(_coverImage!)
-                                          as ImageProvider,
+    return ModalProgressHUD(
+      inAsyncCall: _isLoading,
+      progressIndicator: CircularIndicator(),
+      child: Scaffold(
+        body: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: SingleChildScrollView(
+            physics: ClampingScrollPhysics(),
+            child: SafeArea(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Stack(
+                    children: [
+                      Column(
+                        children: [
+                          Stack(
+                            children: [
+                              Container(
+                                height: 230,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey,
+                                  image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: _coverImage == null
+                                        ? NetworkImage(
+                                            authNotifier.user.coverUrl!)
+                                        : FileImage(_coverImage!)
+                                            as ImageProvider,
+                                  ),
                                 ),
-                              ),
-                              child: ListTile(
-                                leading: TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: Text(
-                                    "Cancel",
-                                    style: TextStyle(
-                                      fontSize: 19,
-                                      color: Colors.white,
+                                child: ListTile(
+                                  leading: TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: Text(
+                                      "Cancel",
+                                      style: TextStyle(
+                                        fontSize: 19,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                  trailing: TextButton(
+                                    onPressed: () async {
+                                      toggleSpinner();
+                                      if (_coverImage != null &&
+                                          _profilImage != null) {
+                                        uploadImageFile(
+                                                _profilImage!, "profilImages")
+                                            .then((String result) {
+                                          setState(() {
+                                            _imageUrl = result;
+                                          });
+                                        });
+
+                                        /* uploadImageFile(
+                                                _coverImage!, "fileName")
+                                            .then((String result) {
+                                          setState(() {
+                                            _coverUrl = result;
+                                          });
+                                        }); */
+
+                                        /* UserModel userModel = new UserModel(
+                                          authNotifier.user.uid!,
+                                          {
+                                            'fullname': fullnameController.text,
+                                            'username': usernameController.text,
+                                            'email': emailController.text,
+                                            'gender': selectedGender(),
+                                            'imageUrl': _imageUrl,
+                                            'coverUrl': _coverUrl,
+                                          },
+                                        );
+                                        await userModel.update();
+                                        authNotifier.user = userModel; */
+                                      }
+                                      toggleSpinner();
+                                    },
+                                    child: Text(
+                                      "Save",
+                                      style: TextStyle(
+                                        fontSize: 19,
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   ),
                                 ),
-                                trailing: TextButton(
-                                  onPressed: () async {
-                                    if (_coverImage != null &&
-                                        _profilImage != null) {
-                                      uploadImageToFirebase(
-                                          _coverImage!, true, "coverImages");
-                                      uploadImageToFirebase(
-                                          _profilImage!, false, "profilImages");
-                                    }
-                                  },
-                                  child: Text(
-                                    "Save",
-                                    style: TextStyle(
-                                      fontSize: 19,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
                               ),
-                            ),
-                            ChangeCover(
-                              onPressed: coverImage,
-                            )
-                          ],
-                        ),
-                        SizedBox(height: 60)
-                      ],
+                              ChangeCover(
+                                onPressed: () {
+                                  chooseImage(context, picker, true);
+                                },
+                              )
+                            ],
+                          ),
+                          SizedBox(height: 60)
+                        ],
+                      ),
+                      ChangePicProfil(
+                        profilImage: _profilImage,
+                        onPressed: () {
+                          chooseImage(context, picker, false);
+                        },
+                        imageUrl: _imageUrl,
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Text("Profile",
+                          style: TextStyle(
+                            fontSize: 23,
+                          )),
                     ),
-                    ChangePicProfil(
-                      profilImage: _profilImage,
-                      onPressed: () {
-                        chooseImage(context);
-                      },
-                      imageUrl: _imageUrl,
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: Text("Profile",
+                  ),
+                  Divider(color: Colors.black),
+                  TextfieldEditProfil(
+                    leading: "Username",
+                    hintText: "Enter your Username",
+                    controller: usernameController,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 40, top: 10),
+                    child: Divider(color: Colors.black),
+                  ),
+                  TextfieldEditProfil(
+                    leading: "FullName",
+                    hintText: "Enter your FullName",
+                    controller: fullnameController,
+                  ),
+                  SizedBox(height: 10),
+                  Divider(color: Colors.black),
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        "INFO",
                         style: TextStyle(
                           fontSize: 23,
-                        )),
-                  ),
-                ),
-                Divider(color: Colors.black),
-                TextfieldEditProfil(
-                  leading: "Username",
-                  hintText: "Enter your Username",
-                  controller: usernameController,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 40, top: 10),
-                  child: Divider(color: Colors.black),
-                ),
-                TextfieldEditProfil(
-                  leading: "FullName",
-                  hintText: "Enter your FullName",
-                  controller: fullnameController,
-                ),
-                SizedBox(height: 10),
-                Divider(color: Colors.black),
-                SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      "INFO",
-                      style: TextStyle(
-                        fontSize: 23,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Divider(color: Colors.black),
-                TextfieldEditProfil(
-                  leading: "Email",
-                  hintText: "Enter your Email",
-                  controller: emailController,
-                ),
-                SizedBox(height: 25),
-                Container(
-                  height: 100,
-                  child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      shrinkWrap: true,
-                      itemCount: genders.length,
-                      itemBuilder: (context, index) {
-                        return InkWell(
-                          splashColor: Colors.pinkAccent,
-                          onTap: () {
-                            setState(() {
-                              _selectedGender = index;
-                              genders.forEach(
-                                  (gender) => gender.isSelected = false);
-                              genders[index].isSelected = true;
-                            });
-                          },
-                          child: CustomRadio(genders[index]),
-                        );
-                      }),
-                ),
-                SizedBox(height: 10),
-              ],
+                  Divider(color: Colors.black),
+                  TextfieldEditProfil(
+                    leading: "Email",
+                    hintText: "Enter your Email",
+                    controller: emailController,
+                  ),
+                  SizedBox(height: 25),
+                  Container(
+                    height: 100,
+                    child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        shrinkWrap: true,
+                        itemCount: genders.length,
+                        itemBuilder: (context, index) {
+                          return InkWell(
+                            splashColor: Colors.pinkAccent,
+                            onTap: () {
+                              setState(() {
+                                _selectedGender = index;
+                                genders.forEach(
+                                    (gender) => gender.isSelected = false);
+                                genders[index].isSelected = true;
+                              });
+                            },
+                            child: CustomRadio(genders[index]),
+                          );
+                        }),
+                  ),
+                  SizedBox(height: 10),
+                ],
+              ),
             ),
           ),
         ),
