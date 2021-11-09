@@ -97,6 +97,8 @@ class _EditProfileState extends State<EditProfile> {
     var ref = firebase_storage.FirebaseStorage.instance
         .ref()
         .child('$cloudFolder/${Path.basename(image.path)}');
+    // ignore: unnecessary_null_comparison
+
     await ref.putFile(image).whenComplete(() async {
       var downurl = await ref.getDownloadURL();
       update(authNotifier.user.uid!, {
@@ -196,7 +198,6 @@ class _EditProfileState extends State<EditProfile> {
     _selectedGender = rightGender(authNotifier.user.gender!);
     _imageUrl = authNotifier.user.imageUrl;
     _coverUrl = authNotifier.user.coverUrl;
-    print(authNotifier.user.fullName);
     gender();
   }
 
@@ -248,41 +249,41 @@ class _EditProfileState extends State<EditProfile> {
                                   trailing: TextButton(
                                     onPressed: () async {
                                       toggleSpinner();
-                                      if (_coverImage != null &&
-                                          _profilImage != null) {
-                                        //profil image
-                                        uploadImage(_profilImage!,
-                                            "ImageProfil", "profil");
-                                        //Cover image
-                                        uploadImage(_coverImage!, "CoverProfil",
-                                            "cover");
-                                        update(
-                                          authNotifier.user.uid!,
-                                          {
-                                            'fullName': fullnameController.text,
-                                            'username': usernameController.text,
-                                            'email': emailController.text,
-                                            'gender': selectedGender(),
-                                          },
-                                        ).whenComplete(() => toggleSpinner());
-                                        UserModel userModel = new UserModel(
-                                          authNotifier.user.uid!,
-                                          {
-                                            'fullName': fullnameController.text,
-                                            'username': usernameController.text,
-                                            'email': emailController.text,
-                                            'gender': selectedGender(),
-                                          },
-                                        );
-                                        authNotifier.user.fullName =
-                                            userModel.fullName;
-                                        authNotifier.user.username =
-                                            userModel.username;
-                                        authNotifier.user.email =
-                                            userModel.email;
-                                        authNotifier.user.gender =
-                                            userModel.gender;
-                                      }
+                                      //profil image
+                                      _profilImage != null
+                                          ? uploadImage(_profilImage!,
+                                              "ImageProfil", "profil")
+                                          : print("Profil Image is null");
+                                      //Cover image
+                                      _coverImage != null
+                                          ? uploadImage(_coverImage!,
+                                              "CoverProfil", "cover")
+                                          : print("Cover Image is null");
+                                      update(
+                                        authNotifier.user.uid!,
+                                        {
+                                          'fullName': fullnameController.text,
+                                          'username': usernameController.text,
+                                          'email': emailController.text,
+                                          'gender': selectedGender(),
+                                        },
+                                      ).whenComplete(() => toggleSpinner());
+                                      UserModel userModel = new UserModel(
+                                        authNotifier.user.uid!,
+                                        {
+                                          'fullName': fullnameController.text,
+                                          'username': usernameController.text,
+                                          'email': emailController.text,
+                                          'gender': selectedGender(),
+                                        },
+                                      );
+                                      authNotifier.user.fullName =
+                                          userModel.fullName;
+                                      authNotifier.user.username =
+                                          userModel.username;
+                                      authNotifier.user.email = userModel.email;
+                                      authNotifier.user.gender =
+                                          userModel.gender;
                                     },
                                     child: Text(
                                       "Save",
@@ -295,9 +296,8 @@ class _EditProfileState extends State<EditProfile> {
                                 ),
                               ),
                               ChangeCover(
-                                onPressed: () {
-                                  chooseImage(context, picker, true);
-                                },
+                                onPressed: () =>
+                                    chooseImage(context, picker, true),
                               )
                             ],
                           ),
@@ -306,9 +306,7 @@ class _EditProfileState extends State<EditProfile> {
                       ),
                       ChangePicProfil(
                         profilImage: _profilImage,
-                        onPressed: () {
-                          chooseImage(context, picker, false);
-                        },
+                        onPressed: () => chooseImage(context, picker, false),
                         imageUrl: _imageUrl,
                       ),
                     ],
@@ -317,10 +315,12 @@ class _EditProfileState extends State<EditProfile> {
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Align(
                       alignment: Alignment.topLeft,
-                      child: Text("Profile",
-                          style: TextStyle(
-                            fontSize: 23,
-                          )),
+                      child: Text(
+                        "Profile",
+                        style: TextStyle(
+                          fontSize: 23,
+                        ),
+                      ),
                     ),
                   ),
                   Divider(color: Colors.black),
@@ -373,7 +373,8 @@ class _EditProfileState extends State<EditProfile> {
                               setState(() {
                                 _selectedGender = index;
                                 genders.forEach(
-                                    (gender) => gender.isSelected = false);
+                                  (gender) => gender.isSelected = false,
+                                );
                                 genders[index].isSelected = true;
                               });
                             },

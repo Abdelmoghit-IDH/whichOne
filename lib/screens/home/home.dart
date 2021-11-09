@@ -40,13 +40,6 @@ class _HomeState extends State<Home> {
   }
 
   @override
-  void initState() {
-    /* final authNotifier = Provider.of<AuthNotifier>(context, listen: false);
-    print(authNotifier.user.email!); */
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: _selectedPageIndex != 1

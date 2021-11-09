@@ -52,7 +52,6 @@ class _SignUpState extends State<SignUp> {
 
   @override
   Widget build(BuildContext context) {
-    //final authNotifier = Provider.of<AuthNotifier>(context, listen: false);
     return ModalProgressHUD(
       inAsyncCall: _isLoading,
       progressIndicator: CircularIndicator(),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
+
 class ProfileTab extends StatelessWidget {
   ProfileTab({Key? key}) : super(key: key);
 
@@ -22,7 +23,6 @@ class BodyProfile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authNotifier = Provider.of<AuthNotifier>(context);
-    print(authNotifier.user.uid);
     return SafeArea(
       child: Container(
         height: double.infinity,
@@ -66,7 +66,7 @@ class BodyProfile extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "authNotifier.user.username!",
+                      authNotifier.user.username!,
                       style: TextStyle(
                         fontSize: 22,
                         color: Colors.white,

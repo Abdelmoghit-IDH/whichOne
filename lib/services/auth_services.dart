@@ -5,7 +5,7 @@ import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:azedpolls/models/user_model.dart';
 import 'package:azedpolls/notifiers/auth_notifier.dart';
-
+import 'package:flutter/material.dart';
 import 'database_service.dart';
 
 Future<void> initializeCurrentUser(AuthNotifier authNotifier) async {
@@ -16,6 +16,8 @@ Future<void> initializeCurrentUser(AuthNotifier authNotifier) async {
           .collection('users')
           .doc(user.uid)
           .get();
+
+      checkIfPostsExit(user.uid);
       UserModel userModel = new UserModel(
         user.uid,
         doc.data()!,
@@ -26,6 +28,19 @@ Future<void> initializeCurrentUser(AuthNotifier authNotifier) async {
   } catch (error) {
     throw error.toString();
   }
+}
+
+checkIfPostsExit(String uid) {
+  var docPost = FirebaseFirestore.instance.collection('posts').doc(uid);
+  docPost.get().then((docSnapshot) {
+    if (docSnapshot.exists) {
+      print('This post exist on firebase :)');
+    } else {
+      docPost.set({'posts': []}).whenComplete(() {
+        print("This post was added to Firebase !!");
+      });
+    }
+  });
 }
 
 Future<void> logout(AuthNotifier authNotifier) async {
@@ -73,8 +88,6 @@ Future<void> signUpWithEmailPassword(Map<String, dynamic> user) async {
       email: user['email'],
       password: user['password'],
     );
-
-    print(_auth.currentUser!.uid);
 
     await DatabaseService(uid: _auth.currentUser!.uid).uploadUserData(
       user['email'],

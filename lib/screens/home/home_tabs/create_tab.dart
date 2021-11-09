@@ -2,12 +2,15 @@ import 'dart:io';
 import 'package:azedpolls/components/circular_indicator.dart';
 import 'package:azedpolls/components/create_tab/picture_poll.dart';
 import 'package:azedpolls/components/create_tab/text_poll.dart';
+import 'package:azedpolls/notifiers/auth_notifier.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:path/path.dart';
+import 'package:path/path.dart' as Path;
+import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import '../../../const.dart';
@@ -29,38 +32,44 @@ class _CreateTabState extends State<CreateTab> {
   File? _imageFile1;
   File? _imageFile2;
   bool _isLoading = false;
+  String? image1, image2;
   final _pollQuestionController = TextEditingController();
   final _optionOneController = TextEditingController();
   final _optionTwoController = TextEditingController();
   final picker = ImagePicker();
 
-  Future uploadImageToFirebase(File imageFile) async {
-    String fileName = basename(imageFile.path);
-    firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
+  //! upload Image To Firebase
+  uploadImage(File imageFile,String image) async {
+    var ref = firebase_storage.FirebaseStorage.instance
         .ref()
-        .child('uploads')
-        .child('/$fileName');
+        .child('pollImages/${Path.basename(imageFile.path)}');
 
-    final metadata = firebase_storage.SettableMetadata(
-      contentType: 'image/jpeg',
-      customMetadata: {'picked-file-path': fileName},
-    );
-    firebase_storage.UploadTask uploadTask;
-    uploadTask = ref.putFile(File(imageFile.path), metadata);
-    Future.value(uploadTask)
-        .then((value) => {print("Upload file path ${value.ref.fullPath}")})
-        .onError((error, stackTrace) =>
-            {print("Upload file path error ${error.toString()} ")});
+    /* await ref.putFile(image).whenComplete(() async {
+      var downurl = await ref.getDownloadURL();
+      var collection = FirebaseFirestore.instance
+          .collection('posts')
+          .doc(uid)
+          .collection("userPosts");
+      collection.doc().set({
+        "linkImage1": downurl,
+        "linkImage2": "",
+        "question": "what is the best car from those two cars ?",
+        "type": "image",
+      });
+    }); */
+    await ref.putFile(imageFile);
+    return await ref.getDownloadURL();
   }
 
+  //! picker image 1
   Future pickImage1() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
     setState(() {
       _imageFile1 = File(pickedFile!.path);
     });
   }
 
+  //! picker image 2
   Future pickImage2() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
@@ -69,6 +78,7 @@ class _CreateTabState extends State<CreateTab> {
     });
   }
 
+  //! On Item Tapped
   _onItemTapped(int index) {
     setState(() {
       _selectedPageIndex = index;
@@ -83,6 +93,7 @@ class _CreateTabState extends State<CreateTab> {
 
   @override
   Widget build(BuildContext context) {
+    final authNotifier = Provider.of<AuthNotifier>(context);
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: ModalProgressHUD(
@@ -126,11 +137,21 @@ class _CreateTabState extends State<CreateTab> {
                         if (_selectedPageIndex == 0) {
                           if (_imageFile1 != null && _imageFile2 != null) {
                             toggleSpinner();
-                            uploadImageToFirebase(_imageFile1!).whenComplete(
-                              () => uploadImageToFirebase(_imageFile2!),
-                            );
+                            uploadImage(_imageFile1!,image1!);
+                            uploadImage(_imageFile2!,image2!);
+                            var collection = FirebaseFirestore.instance
+                                .collection('posts')
+                                .doc(authNotifier.user.uid!)
+                                .collection("userPosts");
+                            collection.doc().set({
+                              "linkImage1": image1, //TODO : the problem
+                              "linkImage2": image2,
+                              "question":
+                                  "what is the best car from those two cars ?",
+                              "type": "image",
+                            });
 
-                            widget.callback!();
+                            //widget.callback!();
                             toggleSpinner();
                           } else {
                             showTopSnackBar(
@@ -161,7 +182,7 @@ class _CreateTabState extends State<CreateTab> {
                         }
                       },
                       child: Text(
-                        "Next",
+                        "Post",
                         style: TextStyle(
                           fontSize: 22,
                           color: Color(0xFFdc8c97),
