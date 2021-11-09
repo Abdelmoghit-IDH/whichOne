@@ -77,7 +77,13 @@ Future<void> signUpWithEmailPassword(Map<String, dynamic> user) async {
     print(_auth.currentUser!.uid);
 
     await DatabaseService(uid: _auth.currentUser!.uid).uploadUserData(
-        user['email'], user['displayName'], user['email'], user['gender']);
+      user['email'],
+      user['displayName'],
+      user['email'],
+      user['gender'],
+      user['cover'],
+      user['profil'],
+    );
 
     await _auth.currentUser!.updateDisplayName(user['displayName']);
     await _auth.currentUser!.sendEmailVerification();

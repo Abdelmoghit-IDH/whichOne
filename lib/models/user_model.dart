@@ -17,8 +17,8 @@ class UserModel {
     this.username = data['username'] ?? "";
     this.email = data['email'] ?? "";
     this.gender = data['gender'] ?? "";
-    this.imageUrl = data['imageUrl'] ?? "";
-    this.coverUrl = data['coverUrl'] ?? "";
+    this.imageUrl = data['profil'] ?? "";
+    this.coverUrl = data['cover'] ?? "";
     this.follower = data['follower'] as int? ?? 0;
     this.following = data['follower'] as int? ?? 0;
   }
@@ -27,6 +27,10 @@ class UserModel {
     return {
       'fullName': this.fullName,
       'email': this.email,
+      'username': this.username,
+      'gender': this.gender,
+      'cover': this.coverUrl,
+      'profil': this.imageUrl,
     };
   }
 
@@ -34,6 +38,6 @@ class UserModel {
     await FirebaseFirestore.instance
         .collection('users')
         .doc(this.uid)
-        .set(this.toMap());
+        .update(this.toMap());
   }
 }

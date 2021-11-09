@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:azedpolls/models/gender_model.dart';
 import 'package:azedpolls/models/user_model.dart';
 import 'package:azedpolls/notifiers/auth_notifier.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -91,26 +92,26 @@ class _EditProfileState extends State<EditProfile> {
     }
   }
 
-  Future<String> uploadImageFile(File image, String cloudFolder,
-      {String? imageName}) async {
-    String fileName = Path.basename(image.path);
-    firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
+  Future uploadImage(File image, String cloudFolder, String updateImage) async {
+    final authNotifier = Provider.of<AuthNotifier>(context, listen: false);
+    var ref = firebase_storage.FirebaseStorage.instance
         .ref()
-        .child(cloudFolder)
-        .child('/$imageName');
+        .child('$cloudFolder/${Path.basename(image.path)}');
+    await ref.putFile(image).whenComplete(() async {
+      var downurl = await ref.getDownloadURL();
+      update(authNotifier.user.uid!, {
+        '$updateImage': downurl,
+      });
+      if (updateImage == "cover") {
+        authNotifier.user.coverUrl = downurl;
+      } else {
+        authNotifier.user.imageUrl = downurl;
+      }
+    });
+  }
 
-    final metadata = firebase_storage.SettableMetadata(
-      contentType: 'image/jpeg',
-      customMetadata: {'picked-file-path': fileName},
-    );
-
-    firebase_storage.UploadTask uploadTask;
-    uploadTask = ref.putFile(File(image.path), metadata);
-
-    //TODO: last problem 
-    //! problem her : getDownloadUrl() is not supported at the root of the bucket.
-    String imageUri = await uploadTask.storage.ref().getDownloadURL();
-    return imageUri;
+  Future<void> update(String uid, Map<String, dynamic> map) async {
+    await FirebaseFirestore.instance.collection('users').doc(uid).update(map);
   }
 
   chooseImage(BuildContext context, ImagePicker picker, bool isCover) {
@@ -195,6 +196,7 @@ class _EditProfileState extends State<EditProfile> {
     _selectedGender = rightGender(authNotifier.user.gender!);
     _imageUrl = authNotifier.user.imageUrl;
     _coverUrl = authNotifier.user.coverUrl;
+    print(authNotifier.user.fullName);
     gender();
   }
 
@@ -248,37 +250,39 @@ class _EditProfileState extends State<EditProfile> {
                                       toggleSpinner();
                                       if (_coverImage != null &&
                                           _profilImage != null) {
-                                        uploadImageFile(
-                                                _profilImage!, "profilImages")
-                                            .then((String result) {
-                                          setState(() {
-                                            _imageUrl = result;
-                                          });
-                                        });
-
-                                        /* uploadImageFile(
-                                                _coverImage!, "fileName")
-                                            .then((String result) {
-                                          setState(() {
-                                            _coverUrl = result;
-                                          });
-                                        }); */
-
-                                        /* UserModel userModel = new UserModel(
+                                        //profil image
+                                        uploadImage(_profilImage!,
+                                            "ImageProfil", "profil");
+                                        //Cover image
+                                        uploadImage(_coverImage!, "CoverProfil",
+                                            "cover");
+                                        update(
                                           authNotifier.user.uid!,
                                           {
-                                            'fullname': fullnameController.text,
+                                            'fullName': fullnameController.text,
                                             'username': usernameController.text,
                                             'email': emailController.text,
                                             'gender': selectedGender(),
-                                            'imageUrl': _imageUrl,
-                                            'coverUrl': _coverUrl,
+                                          },
+                                        ).whenComplete(() => toggleSpinner());
+                                        UserModel userModel = new UserModel(
+                                          authNotifier.user.uid!,
+                                          {
+                                            'fullName': fullnameController.text,
+                                            'username': usernameController.text,
+                                            'email': emailController.text,
+                                            'gender': selectedGender(),
                                           },
                                         );
-                                        await userModel.update();
-                                        authNotifier.user = userModel; */
+                                        authNotifier.user.fullName =
+                                            userModel.fullName;
+                                        authNotifier.user.username =
+                                            userModel.username;
+                                        authNotifier.user.email =
+                                            userModel.email;
+                                        authNotifier.user.gender =
+                                            userModel.gender;
                                       }
-                                      toggleSpinner();
                                     },
                                     child: Text(
                                       "Save",

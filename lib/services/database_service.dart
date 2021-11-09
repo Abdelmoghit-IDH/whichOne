@@ -27,7 +27,7 @@ class DatabaseService {
       FirebaseFirestore.instance.collection('followings');
 
   Future uploadUserData(
-      String email, String fullName, String nickname, String gender) async {
+      String email, String fullName, String nickname, String gender,String cover,String profil) async {
     followersReference.doc(uid).collection('userFollowing');
     followingReference.doc(uid).collection('userFollowers');
     return await azedpollsCollection.doc(uid).set({
@@ -35,6 +35,8 @@ class DatabaseService {
       "fullName": fullName,
       "gender": gender,
       'uid': uid,
+      "cover": cover,
+      "profil":profil,
     });
   }
 }

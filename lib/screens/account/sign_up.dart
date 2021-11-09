@@ -209,8 +209,9 @@ class _SignUpState extends State<SignUp> {
                                     'email': emailController.text.trim(),
                                     'password': passwordController.text.trim(),
                                     'gender': selectedGender(),
+                                    'cover':"https://firebasestorage.googleapis.com/v0/b/whichone-7de3e.appspot.com/o/coverImages%2Fimage_picker451391046.jpg?alt=media&token=59f07a6e-28c8-42d2-8a8e-c05111ca41a8",
+                                    'profil':"https://firebasestorage.googleapis.com/v0/b/whichone-7de3e.appspot.com/o/coverImages%2Fimage_picker451391046.jpg?alt=media&token=59f07a6e-28c8-42d2-8a8e-c05111ca41a8"
                                   });
-
                                   Navigator.pushReplacementNamed(
                                     context,
                                     '/Login',

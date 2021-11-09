@@ -34,12 +34,10 @@ class BodyProfile extends StatelessWidget {
               child: Container(
                 decoration: BoxDecoration(
                   color: Color(0xff414141),
-                  image: authNotifier.user.coverUrl != ""
-                      ? DecorationImage(
-                          fit: BoxFit.cover,
-                          image: NetworkImage(authNotifier.user.coverUrl!),
-                        )
-                      : null,
+                  image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: NetworkImage(authNotifier.user.coverUrl!),
+                  ),
                 ),
                 child: Column(
                   children: [
@@ -62,10 +60,8 @@ class BodyProfile extends StatelessWidget {
                         child: CircleAvatar(
                           backgroundColor: Colors.transparent,
                           radius: 45,
-                          backgroundImage: authNotifier.user.imageUrl! != ""
-                              ? NetworkImage(authNotifier.user.imageUrl!)
-                              : AssetImage('assets/images/profile.png')
-                                  as ImageProvider,
+                          backgroundImage:
+                              NetworkImage(authNotifier.user.imageUrl!),
                         ),
                       ),
                     ),
